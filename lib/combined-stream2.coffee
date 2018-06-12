@@ -187,6 +187,10 @@ class CombinedStream extends stream.Readable
 			# Since Node.js v0.12, a stream will apparently return null when it is finished... we need to filter this out, to prevent it from ending our combined stream prematurely.
 			if chunk?
 				@push chunk
+			else
+				# Since we are not calling push, make sure we mark wantData so that we will eventually call push after we get the 'readable' event.
+				# Without this, it's possible to break the push->read chain and hang the stream.
+				@_wantData=true;
 
 			Promise.resolve()
 
